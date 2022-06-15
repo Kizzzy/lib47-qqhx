@@ -34,14 +34,14 @@ public class FspPackage extends AbstractPackage {
     protected void initDefaultHandler() {
         super.initDefaultHandler();
         
-        handlerKvs.put(FspItem.class, new FspFileHandler());
-        handlerKvs.put(CseFile.class, new CseFileHandler());
-        handlerKvs.put(ResFile.class, new ResFileHandler());
-        handlerKvs.put(SfpFile.class, new SfpFileHandler());
-        handlerKvs.put(MfpFile.class, new MfpFileHandler());
-        handlerKvs.put(MspFile.class, new MspFileHandler());
-        handlerKvs.put(MapFile.class, new MapFileHandler());
-        handlerKvs.put(MaiFile.class, new MaiFileHandler());
+        addHandler(FspItem.class, new FspFileHandler());
+        addHandler(CseFile.class, new CseFileHandler());
+        addHandler(ResFile.class, new ResFileHandler());
+        addHandler(SfpFile.class, new SfpFileHandler());
+        addHandler(MfpFile.class, new MfpFileHandler());
+        addHandler(MspFile.class, new MspFileHandler());
+        addHandler(MapFile.class, new MapFileHandler());
+        addHandler(MaiFile.class, new MaiFileHandler());
     }
     
     @Override
