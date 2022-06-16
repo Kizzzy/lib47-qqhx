@@ -2,9 +2,9 @@ package cn.kizzzy.qqhx;
 
 import cn.kizzzy.io.IFullyReader;
 import cn.kizzzy.io.SliceFullReader;
-import cn.kizzzy.vfs.IStreamable;
+import cn.kizzzy.vfs.IInputStreamGetter;
 
-public class FspItem implements IStreamable {
+public class FspItem implements IInputStreamGetter {
     
     public short[] magic;
     
@@ -29,23 +29,23 @@ public class FspItem implements IStreamable {
     public int reserved_10;
     
     public String pack;
-    private IStreamable source;
+    private IInputStreamGetter source;
     
     @Override
-    public IStreamable getSource() {
+    public IInputStreamGetter getSource() {
         return source;
     }
     
     @Override
-    public void setSource(IStreamable source) {
+    public void setSource(IInputStreamGetter source) {
         this.source = source;
     }
     
     @Override
-    public IFullyReader OpenStream() throws Exception {
+    public IFullyReader getInput() throws Exception {
         if (getSource() == null) {
             throw new NullPointerException("source is null");
         }
-        return new SliceFullReader(getSource().OpenStream(), dataStart, originSize);
+        return new SliceFullReader(getSource().getInput(), dataStart, originSize);
     }
 }
