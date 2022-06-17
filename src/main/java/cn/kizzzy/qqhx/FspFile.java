@@ -1,5 +1,9 @@
 package cn.kizzzy.qqhx;
 
+import cn.kizzzy.io.IFullyReader;
+import cn.kizzzy.io.SliceFullReader;
+import cn.kizzzy.vfs.IInputStreamGetter;
+
 public class FspFile {
     
     public short[] magic;
@@ -12,11 +16,17 @@ public class FspFile {
     
     public long indexOffset;
     
-    public String path;
-    
     public Idx[] idxes;
     
-    public FspItem[] items;
+    public Entry[] items;
+    
+    // -------------------- extra field --------------------
+    
+    public String path;
+    
+    public FspFile(String path) {
+        this.path = path;
+    }
     
     public static class Idx {
         
@@ -27,5 +37,58 @@ public class FspFile {
         public String path;
         
         public long offset;
+    }
+    
+    public static class Entry implements IInputStreamGetter {
+        
+        public short[] magic;
+        
+        public int reserved_01;
+        
+        public int reserved_02;
+        
+        public String path;
+        
+        public int compressSize;
+        
+        public int originSize;
+        
+        public int dataStart;
+        
+        public int dataEnd;
+        
+        public int prevOffset;
+        
+        public int isFile;
+        
+        public int reserved_10;
+        
+        // -------------------- extra field --------------------
+        
+        public String pack;
+        
+        private IInputStreamGetter source;
+        
+        public Entry(String pack) {
+            this.pack = pack;
+        }
+        
+        @Override
+        public IInputStreamGetter getSource() {
+            return source;
+        }
+        
+        @Override
+        public void setSource(IInputStreamGetter source) {
+            this.source = source;
+        }
+        
+        @Override
+        public IFullyReader getInput() throws Exception {
+            if (getSource() == null) {
+                throw new NullPointerException("source is null");
+            }
+            return new SliceFullReader(getSource().getInput(), dataStart, originSize);
+        }
     }
 }

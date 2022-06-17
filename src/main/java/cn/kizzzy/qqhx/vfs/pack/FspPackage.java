@@ -1,7 +1,7 @@
 package cn.kizzzy.qqhx.vfs.pack;
 
 import cn.kizzzy.qqhx.CseFile;
-import cn.kizzzy.qqhx.FspItem;
+import cn.kizzzy.qqhx.FspFile;
 import cn.kizzzy.qqhx.MaiFile;
 import cn.kizzzy.qqhx.MapFile;
 import cn.kizzzy.qqhx.MfpFile;
@@ -16,20 +16,26 @@ import cn.kizzzy.qqhx.vfs.handler.MfpFileHandler;
 import cn.kizzzy.qqhx.vfs.handler.MspFileHandler;
 import cn.kizzzy.qqhx.vfs.handler.ResFileHandler;
 import cn.kizzzy.qqhx.vfs.handler.SfpFileHandler;
+import cn.kizzzy.vfs.IStreamGetterFactory;
 import cn.kizzzy.vfs.ITree;
 import cn.kizzzy.vfs.pack.LeafPackage;
+import cn.kizzzy.vfs.stream.FileStreamGetterFactory;
 
-public class FspPackage extends LeafPackage<FspItem> {
+public class FspPackage extends LeafPackage<FspFile.Entry> {
     
     public FspPackage(String root, ITree tree) {
-        super(root, tree, FspItem.class, entry -> entry.pack);
+        this(tree, new FileStreamGetterFactory(root));
+    }
+    
+    public FspPackage(ITree tree, IStreamGetterFactory factory) {
+        super(tree, factory, FspFile.Entry.class, entry -> entry.pack);
     }
     
     @Override
     protected void initDefaultHandler() {
         super.initDefaultHandler();
         
-        addHandler(FspItem.class, new FspFileHandler());
+        addHandler(FspFile.Entry.class, new FspFileHandler());
         addHandler(CseFile.class, new CseFileHandler());
         addHandler(ResFile.class, new ResFileHandler());
         addHandler(SfpFile.class, new SfpFileHandler());
