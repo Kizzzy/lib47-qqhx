@@ -2,7 +2,7 @@ package cn.kizzzy.qqhx;
 
 import cn.kizzzy.io.IFullyReader;
 import cn.kizzzy.io.SliceFullReader;
-import cn.kizzzy.vfs.IInputStreamGetter;
+import cn.kizzzy.vfs.stream.HolderInputStreamGetter;
 
 public class FspFile {
     
@@ -39,7 +39,7 @@ public class FspFile {
         public long offset;
     }
     
-    public static class Entry implements IInputStreamGetter {
+    public static class Entry extends HolderInputStreamGetter {
         
         public short[] magic;
         
@@ -67,20 +67,8 @@ public class FspFile {
         
         public String pack;
         
-        private IInputStreamGetter source;
-        
         public Entry(String pack) {
             this.pack = pack;
-        }
-        
-        @Override
-        public IInputStreamGetter getSource() {
-            return source;
-        }
-        
-        @Override
-        public void setSource(IInputStreamGetter source) {
-            this.source = source;
         }
         
         @Override
