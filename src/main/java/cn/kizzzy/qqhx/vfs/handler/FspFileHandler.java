@@ -22,6 +22,8 @@ public class FspFileHandler implements IFileHandler<FspFile> {
     
     @Override
     public FspFile load(IPackage vfs, String path, IFullyReader reader, long size) throws Exception {
+        reader.setLittleEndian(true);
+        
         FspFile fspFile = new FspFile(path);
         fspFile.magic = reader.readUnsignedBytes(4);
         
@@ -29,10 +31,10 @@ public class FspFileHandler implements IFileHandler<FspFile> {
             return null;
         }
         
-        fspFile.reserved_01 = reader.readIntEx();
-        fspFile.count = reader.readIntEx();
-        fspFile.headerSize = reader.readIntEx();
-        fspFile.indexOffset = reader.readUnsignedIntEx();
+        fspFile.reserved_01 = reader.readInt();
+        fspFile.count = reader.readInt();
+        fspFile.headerSize = reader.readInt();
+        fspFile.indexOffset = reader.readUnsignedInt();
         fspFile.idxes = new FspFile.Idx[fspFile.count];
         
         reader.seek(fspFile.indexOffset, SeekType.BEGIN);
@@ -40,7 +42,7 @@ public class FspFileHandler implements IFileHandler<FspFile> {
         for (int i = 0; i < fspFile.count; ++i) {
             FspFile.Idx idx = new FspFile.Idx();
             idx.path = reader.readString(64);
-            idx.offset = reader.readUnsignedIntEx();
+            idx.offset = reader.readUnsignedInt();
             
             fspFile.idxes[i] = idx;
         }
@@ -68,16 +70,16 @@ public class FspFileHandler implements IFileHandler<FspFile> {
             return null;
         }
         
-        entry.reserved_01 = reader.readIntEx();
-        entry.reserved_02 = reader.readIntEx();
+        entry.reserved_01 = reader.readInt();
+        entry.reserved_02 = reader.readInt();
         entry.path = reader.readString(32);
-        entry.compressSize = reader.readIntEx();
-        entry.originSize = reader.readIntEx();
-        entry.dataStart = reader.readIntEx();
-        entry.dataEnd = reader.readIntEx();
-        entry.prevOffset = reader.readIntEx();
-        entry.isFile = reader.readIntEx();
-        entry.reserved_10 = reader.readIntEx();
+        entry.compressSize = reader.readInt();
+        entry.originSize = reader.readInt();
+        entry.dataStart = reader.readInt();
+        entry.dataEnd = reader.readInt();
+        entry.prevOffset = reader.readInt();
+        entry.isFile = reader.readInt();
+        entry.reserved_10 = reader.readInt();
         return entry;
     }
     

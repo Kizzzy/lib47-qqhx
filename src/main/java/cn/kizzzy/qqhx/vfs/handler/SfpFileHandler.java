@@ -28,6 +28,8 @@ public class SfpFileHandler implements IFileHandler<SfpFile> {
     
     @Override
     public SfpFile load(IPackage vfs, String path, IFullyReader reader, long size) throws Exception {
+        reader.setLittleEndian(true);
+        
         SfpFile sfpFile = new SfpFile();
         try {
             sfpFile.magic = reader.readUnsignedBytes(2);
@@ -36,19 +38,19 @@ public class SfpFileHandler implements IFileHandler<SfpFile> {
                 return null;
             }
             
-            sfpFile.fileSize = reader.readIntEx();
-            sfpFile.width = reader.readIntEx();
-            sfpFile.height = reader.readIntEx();
-            sfpFile.reserved_01 = reader.readShortEx();
-            sfpFile.dataOffset = reader.readIntEx();
-            sfpFile.palettes = palettes != null ? palettes : reader.readShortExs((sfpFile.dataOffset - HEADER_SIZE) / 2);
+            sfpFile.fileSize = reader.readInt();
+            sfpFile.width = reader.readInt();
+            sfpFile.height = reader.readInt();
+            sfpFile.reserved_01 = reader.readShort();
+            sfpFile.dataOffset = reader.readInt();
+            sfpFile.palettes = palettes != null ? palettes : reader.readShorts((sfpFile.dataOffset - HEADER_SIZE) / 2);
             sfpFile.pixelData = new int[sfpFile.width * sfpFile.height];
             
             boolean hasPalettes = sfpFile.palettes != null && sfpFile.palettes.length > 0;
             
             int pixelIndex = 0;
             for (int r = 0, h = sfpFile.height; r < h; ++r) {
-                int count = reader.readShortEx();
+                int count = reader.readShort();
                 
                 for (long i = reader.position(), x = i + count - 2; i < x; i = reader.position()) {
                     int byte1 = reader.readUnsignedByte();
@@ -79,7 +81,7 @@ public class SfpFileHandler implements IFileHandler<SfpFile> {
                                 int[][] arr = new int[c][];
                                 for (int j = 0, y = c; j < y; ++j) {
                                     arr[j] = new int[2];
-                                    arr[j][0] = reader.readShortEx();
+                                    arr[j][0] = reader.readShort();
                                 }
                                 for (int j = 0, y = c; j < y; ++j) {
                                     arr[j][1] = reader.readUnsignedByte();
@@ -101,7 +103,7 @@ public class SfpFileHandler implements IFileHandler<SfpFile> {
                             int[][] arr = new int[c][];
                             for (int j = 0, y = c; j < y; ++j) {
                                 arr[j] = new int[2];
-                                arr[j][0] = reader.readShortEx();
+                                arr[j][0] = reader.readShort();
                             }
                             for (int j = 0, y = c; j < y; ++j) {
                                 arr[j][1] = reader.readUnsignedByte();

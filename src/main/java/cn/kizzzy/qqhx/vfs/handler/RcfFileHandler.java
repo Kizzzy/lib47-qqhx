@@ -16,36 +16,38 @@ public class RcfFileHandler implements IFileHandler<RcfFile> {
     
     @Override
     public RcfFile load(IPackage vfs, String path, IFullyReader reader, long size) throws Exception {
+        reader.setLittleEndian(true);
+        
         RcfFile rcfFile = new RcfFile();
         rcfFile.magic = reader.readUnsignedBytes(4);
         if (!ByteHelper.equals(rcfFile.magic, MAGIC)) {
             return null;
         }
         
-        rcfFile.count = reader.readIntEx();
-        rcfFile.offset = reader.readIntEx();
+        rcfFile.count = reader.readInt();
+        rcfFile.offset = reader.readInt();
         
         reader.seek(rcfFile.offset, SeekType.BEGIN);
         
         rcfFile.item1s = new RcfFile.Item1[rcfFile.count];
         for (int i = 0, n = rcfFile.item1s.length; i < n; ++i) {
             RcfFile.Item1 item = new RcfFile.Item1();
-            item.id = reader.readUnsignedIntEx();
-            item.offset = reader.readUnsignedIntEx();
+            item.id = reader.readUnsignedInt();
+            item.offset = reader.readUnsignedInt();
             rcfFile.item1s[i] = item;
         }
         
         for (RcfFile.Item1 item1 : rcfFile.item1s) {
             reader.seek(item1.offset, SeekType.BEGIN);
             
-            item1.reserved_01 = reader.readUnsignedShortEx();
-            item1.count1 = reader.readUnsignedShortEx();
-            item1.reserved_03 = reader.readUnsignedShortEx();
-            item1.count2 = reader.readUnsignedShortEx();
-            item1.count3 = reader.readUnsignedShortEx();
-            item1.id2s = reader.readUnsignedIntExs(item1.count2);
+            item1.reserved_01 = reader.readUnsignedShort();
+            item1.count1 = reader.readUnsignedShort();
+            item1.reserved_03 = reader.readUnsignedShort();
+            item1.count2 = reader.readUnsignedShort();
+            item1.count3 = reader.readUnsignedShort();
+            item1.id2s = reader.readUnsignedInts(item1.count2);
             item1.id1s = reader.readUnsignedBytes(item1.count1);
-            item1.id3s = reader.readUnsignedShortExs(item1.count3);
+            item1.id3s = reader.readUnsignedShorts(item1.count3);
         }
         
         return rcfFile;

@@ -10,13 +10,15 @@ public class MaiFileHandler implements IFileHandler<MaiFile> {
     
     @Override
     public MaiFile load(IPackage vfs, String path, IFullyReader reader, long size) throws Exception {
+        reader.setLittleEndian(true);
+        
         MaiFile maiFile = new MaiFile();
-        maiFile.width = reader.readShortEx();
-        maiFile.height = reader.readShortEx();
+        maiFile.width = reader.readShort();
+        maiFile.height = reader.readShort();
         maiFile.data = new short[maiFile.height][maiFile.width];
         for (int i = 0; i < maiFile.height; ++i) {
             for (int j = 0; j < maiFile.width; ++j) {
-                maiFile.data[i][j] = reader.readShortEx();
+                maiFile.data[i][j] = reader.readShort();
             }
         }
         return maiFile;

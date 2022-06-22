@@ -17,6 +17,8 @@ public class MfpFileHandler implements IFileHandler<MfpFile> {
     
     @Override
     public MfpFile load(IPackage vfs, String path, IFullyReader reader, long size) throws Exception {
+        reader.setLittleEndian(true);
+        
         MfpFile mfpFile = new MfpFile();
         mfpFile.magic = reader.readUnsignedBytes(4);
         
@@ -24,30 +26,30 @@ public class MfpFileHandler implements IFileHandler<MfpFile> {
             return null;
         }
         
-        mfpFile.fileOffset = reader.readIntEx();
-        mfpFile.reserved_01 = reader.readIntEx();
-        mfpFile.reserved_02 = reader.readIntEx();
-        mfpFile.paletteSize = reader.readUnsignedShortEx();
-        mfpFile.paletteCount = reader.readUnsignedShortEx();
-        mfpFile.reserved_04 = reader.readIntEx();
-        mfpFile.fileCount = reader.readIntEx();
+        mfpFile.fileOffset = reader.readInt();
+        mfpFile.reserved_01 = reader.readInt();
+        mfpFile.reserved_02 = reader.readInt();
+        mfpFile.paletteSize = reader.readUnsignedShort();
+        mfpFile.paletteCount = reader.readUnsignedShort();
+        mfpFile.reserved_04 = reader.readInt();
+        mfpFile.fileCount = reader.readInt();
         
         mfpFile.palettes = new short[mfpFile.paletteCount];
         for (int i = 0, n = mfpFile.paletteCount; i < n; ++i) {
-            mfpFile.palettes[i] = reader.readShortEx();
+            mfpFile.palettes[i] = reader.readShort();
         }
         
         mfpFile.frames = new MfpFile.Frame[mfpFile.fileCount];
         for (int i = 0, n = mfpFile.fileCount; i < n; ++i) {
             MfpFile.Frame frame = new MfpFile.Frame();
-            frame.reserved_01 = reader.readShortEx();
-            frame.reserved_02 = reader.readShortEx();
-            frame.reserved_03 = reader.readShortEx();
-            frame.reserved_04 = reader.readShortEx();
-            frame.offsetX = reader.readShortEx();
-            frame.offsetY = reader.readShortEx();
-            frame.width = reader.readUnsignedShortEx();
-            frame.height = reader.readUnsignedShortEx();
+            frame.reserved_01 = reader.readShort();
+            frame.reserved_02 = reader.readShort();
+            frame.reserved_03 = reader.readShort();
+            frame.reserved_04 = reader.readShort();
+            frame.offsetX = reader.readShort();
+            frame.offsetY = reader.readShort();
+            frame.width = reader.readUnsignedShort();
+            frame.height = reader.readUnsignedShort();
             
             mfpFile.frames[i] = frame;
         }

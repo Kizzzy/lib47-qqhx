@@ -13,18 +13,20 @@ public class MapFileHandler implements IFileHandler<MapFile> {
     
     @Override
     public MapFile load(IPackage vfs, String path, IFullyReader reader, long size) throws Exception {
+        reader.setLittleEndian(true);
+        
         MapFile mapFile = new MapFile();
-        mapFile.fileSize = reader.readIntEx();
-        mapFile.reserved_01 = reader.readIntEx();
-        mapFile.width = reader.readIntEx();
-        mapFile.height = reader.readIntEx();
+        mapFile.fileSize = reader.readInt();
+        mapFile.reserved_01 = reader.readInt();
+        mapFile.width = reader.readInt();
+        mapFile.height = reader.readInt();
         mapFile.bytes_01 = reader.readUnsignedBytes(128);
         
         reader.seek(144, SeekType.BEGIN);
-        long index = reader.readUnsignedIntEx();
+        long index = reader.readUnsignedInt();
         
         reader.seek(144, SeekType.BEGIN);
-        mapFile.offsets = reader.readUnsignedIntExs((int) ((index - 144) / 4));
+        mapFile.offsets = reader.readUnsignedInts((int) ((index - 144) / 4));
         
         mapFile.data = new LinkedList<>();
         for (int i = 0, n = mapFile.offsets.length; i < n; ++i) {
